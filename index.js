@@ -105,7 +105,7 @@ window.addEventListener('load', () => {
       canvas.addEventListener('touchmove', (event) => {
         // eventの中の値を見たい場合は以下のようにconsole.log(event)で、
         // デベロッパーツールのコンソールに出力させると良い
-        // console.log(event);
+        console.log(event);
   
         draw(event.layerX, event.layerY);
       });
