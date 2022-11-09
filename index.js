@@ -95,8 +95,9 @@ window.addEventListener('load', () => {
       canvas.addEventListener('mousemove', (event) => {
         // eventの中の値を見たい場合は以下のようにconsole.log(event)で、
         // デベロッパーツールのコンソールに出力させると良い
-        // console.log(event);
-  
+        console.log(event);
+        console.log("mouse");
+        
         draw(event.layerX, event.layerY);
       })
       canvas.addEventListener('touchdown', dragStart);
@@ -106,6 +107,7 @@ window.addEventListener('load', () => {
         // eventの中の値を見たい場合は以下のようにconsole.log(event)で、
         // デベロッパーツールのコンソールに出力させると良い
         console.log(event);
+        console.log("touch");
   
         draw(event.layerX, event.layerY);
       });
