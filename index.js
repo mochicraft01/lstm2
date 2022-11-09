@@ -10,12 +10,13 @@ window.addEventListener('load', () => {
   
     // マウスがドラッグされているか(クリックされたままか)判断するためのフラグ
     let isDrag = false;
+    let isTouch = false;
   
     // 絵を書く
     function draw(x, y) {
       // マウスがドラッグされていなかったら処理を中断する。
       // ドラッグしながらしか絵を書くことが出来ない。
-      if(!isDrag) {
+      if(!isDrag && !isTouch) {
         return;
       }
   
@@ -68,6 +69,7 @@ window.addEventListener('load', () => {
       context.beginPath();
   
       isDrag = true;
+      isTouch = true;
     }
     // マウスのドラッグが終了したら、もしくはマウスがcanvas外に移動したら
     // isDragのフラグをfalseにしてdraw関数内でお絵かき処理が中断されるようにする
@@ -75,6 +77,7 @@ window.addEventListener('load', () => {
       // 線を書く処理の終了を宣言する
       context.closePath();
       isDrag = false;
+      isTouch = false;
   
       // 描画中に記録していた値をリセットする
       lastPosition.x = null;
@@ -90,6 +93,16 @@ window.addEventListener('load', () => {
       canvas.addEventListener('mouseup', dragEnd);
       canvas.addEventListener('mouseout', dragEnd);
       canvas.addEventListener('mousemove', (event) => {
+        // eventの中の値を見たい場合は以下のようにconsole.log(event)で、
+        // デベロッパーツールのコンソールに出力させると良い
+        // console.log(event);
+  
+        draw(event.layerX, event.layerY);
+      })
+      canvas.addEventListener('touchdown', dragStart);
+      canvas.addEventListener('touchup', dragEnd);
+      canvas.addEventListener('touchout', dragEnd);
+      canvas.addEventListener('touchmove', (event) => {
         // eventの中の値を見たい場合は以下のようにconsole.log(event)で、
         // デベロッパーツールのコンソールに出力させると良い
         // console.log(event);
