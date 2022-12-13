@@ -96,22 +96,23 @@ window.addEventListener('load', () => {
       // eventの中の値を見たい場合は以下のようにconsole.log(event)で、
       // デベロッパーツールのコンソールに出力させると良い
       console.log(event);
-      console.log("mouse");
+      console.log("mousemove");
       
       draw(event.layerX, event.layerY);
     })
 
-    canvas.addEventListener('touchstart',dragStart);
+    canvas.addEventListener('touchstart', dragStart);
     canvas.addEventListener('touchend', dragEnd);
     canvas.addEventListener('touchcancel', dragEnd);
     canvas.addEventListener('touchmove', (event) => {
       // eventの中の値を見たい場合は以下のようにconsole.log(event)で、
       // デベロッパーツールのコンソールに出力させると良い
 
-      //console.log(event);
-      //console.log("touch");
-
-      draw(event.screenX, event.screenY);
+      console.log(event);
+      console.log("touchmove");
+      console.log(event.changedTouches[0].screenX);
+      console.log(event.changedTouches[0].screenY);
+      draw(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
     });
   }
 
