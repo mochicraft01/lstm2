@@ -101,14 +101,18 @@ window.addEventListener('load', () => {
       draw(event.layerX, event.layerY);
     })
 
-    canvas.addEventListener('touchstart', dragStart);
+    canvas.addEventListener('touchstart', (event)=>{
+      console.log(event);
+      console.log("touchstart");
+    });
     canvas.addEventListener('touchend', dragEnd);
     canvas.addEventListener('touchcancel', dragEnd);
     canvas.addEventListener('touchmove', (event) => {
       // eventの中の値を見たい場合は以下のようにconsole.log(event)で、
       // デベロッパーツールのコンソールに出力させると良い
-      console.log(event);
-      console.log("touch");
+
+      //console.log(event);
+      //console.log("touch");
 
       draw(event.layerX, event.layerY);
     });
