@@ -101,10 +101,7 @@ window.addEventListener('load', () => {
       draw(event.layerX, event.layerY);
     })
 
-    canvas.addEventListener('touchstart', (event)=>{
-      console.log(event);
-      console.log("touchstart");
-    });
+    canvas.addEventListener('touchstart',dragStart);
     canvas.addEventListener('touchend', dragEnd);
     canvas.addEventListener('touchcancel', dragEnd);
     canvas.addEventListener('touchmove', (event) => {
@@ -114,7 +111,7 @@ window.addEventListener('load', () => {
       //console.log(event);
       //console.log("touch");
 
-      draw(event.layerX, event.layerY);
+      draw(event.screenX, event.screenY);
     });
   }
 
