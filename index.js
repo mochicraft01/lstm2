@@ -5,14 +5,30 @@ window.addEventListener('load', () => {
   // contextを使ってcanvasに絵を書いていく
   const context = canvas.getContext('2d');
 
-  // 直前のマウスのcanvas上のx座標とy座標を記録する
-  const lastPosition = { x: null, y: null };
+  const clearButton = document.querySelector('#clear-button');
+  const nextButton = document.querySelector('#next-button');
+  const counter = document.querySelector('#counter');
 
-  // マウスがドラッグされているか(クリックされたままか)判断するためのフラグ
+  // 直前のマウスのcanvas上のx座標とy座標を記録する
+  let lastPosition = { x: null, y: null };
+
+  let data = new Array(5);
+  data[0] = [];
+  data[1] = [];
+  data[2] = [];
+  data[3] = [];
+  data[4] = [];
+  let now_coordinate = new Array(2);
+  let count = 0;
+  let character_count = 0;
+  const times = 1;
+  let start_flag = false;
   let isDrag = false;
   let isTouch = false;
 
-  // 絵を書く
+  nextButton.disabled = true;
+
+ 
   function draw(x, y) {
     // マウスがドラッグされていなかったら処理を中断する。
     // ドラッグしながらしか絵を書くことが出来ない。
@@ -23,12 +39,11 @@ window.addEventListener('load', () => {
     // 「context.beginPath()」と「context.closePath()」を都度draw関数内で実行するよりも、
     // 線の描き始め(dragStart関数)と線の描き終わり(dragEnd)で1回ずつ読んだほうがより綺麗に線が書ける
 
-    // 線の状態を定義する
     // MDN CanvasRenderingContext2D: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineJoin
-    context.lineCap = 'round'; // 丸みを帯びた線にする
-    context.lineJoin = 'round'; // 丸みを帯びた線にする
-    context.lineWidth = 5; // 線の太さ
-    context.strokeStyle = 'black'; // 線の色
+    context.lineCap = 'round';
+    context.lineJoin = 'round';
+    context.lineWidth = 5;
+    context.strokeStyle = 'black';
 
     // 書き始めは lastPosition.x, lastPosition.y の値はnullとなっているため、
     // クリックしたところを開始点としている。
@@ -67,7 +82,7 @@ window.addEventListener('load', () => {
     // これから新しい線を書き始めることを宣言する
     // 一連の線を書く処理が終了したらdragEnd関数内のclosePathで終了を宣言する
     context.beginPath();
-
+    start_flag = true;
     isDrag = true;
     isTouch = true;
   }
@@ -79,43 +94,88 @@ window.addEventListener('load', () => {
     isDrag = false;
     isTouch = false;
 
-    // 描画中に記録していた値をリセットする
+    
     lastPosition.x = null;
     lastPosition.y = null;
   }
 
-  // マウス操作やボタンクリック時のイベント処理を定義する
+
   function initEventHandler() {
-    const clearButton = document.querySelector('#clear-button');
-    clearButton.addEventListener('click', clear);
+    clearButton.addEventListener('click', (event) => {
+      clear();
+      nextButton.disabled = true;
+      if (start_flag == ture){
+        data[character_count].pop;
+      }
+      start_flag = false;
+    });
+    nextButton.addEventListener('click', (event) => {
+      clear();
+      nextButton.disabled = true;
+      count = ++count;
+      counter.innerHTML = `あと${times-count}文字`;
+      if (count == times){
+        count = 0;
+        character_count = ++character_count;
+        if (character_count == 1){
+          character.innerHTML = '「ん」を書いてください';
+          counter.innerHTML = `あと${times}文字`;
+        }
+        if (character_count == 2){
+          character.innerHTML = '「だ」を書いてください';
+          counter.innerHTML = `あと${times}文字`;
+        }
+        if (character_count == 3){
+          character.innerHTML = '「も」を書いてください';
+          counter.innerHTML = `あと${times}文字`;
+        }
+        if (character_count == 4){
+          character.innerHTML = '「ち」を書いてください';
+          counter.innerHTML = `あと${times}文字`;
+        }
+        if (character_count == 5){
+          character.innerHTML = 'ご協力ありがとうございました。';
+          counter.innerHTML = '';
+          console.log(data);
+        }
+      }
+      start_flag = true;
+    })
 
     canvas.addEventListener('mousedown', dragStart);
     canvas.addEventListener('mouseup', dragEnd);
     canvas.addEventListener('mouseout', dragEnd);
     canvas.addEventListener('mousemove', (event) => {
-      // eventの中の値を見たい場合は以下のようにconsole.log(event)で、
-      // デベロッパーツールのコンソールに出力させると良い
-      console.log(event);
-      console.log("mousemove");
-      
       draw(event.layerX, event.layerY);
+      if(!isDrag && !isTouch) {
+        return;
+      }
+      if (character_count != 5 && data[character_count].length > 50){
+        nextButton.disabled = false;
+      }
+      now_coordinate[0] = event.layerX;
+      now_coordinate[1] = event.layerY;
+      data[character_count].push(now_coordinate.concat());
     })
 
     canvas.addEventListener('touchstart', dragStart);
     canvas.addEventListener('touchend', dragEnd);
     canvas.addEventListener('touchcancel', dragEnd);
     canvas.addEventListener('touchmove', (event) => {
-      // eventの中の値を見たい場合は以下のようにconsole.log(event)で、
-      // デベロッパーツールのコンソールに出力させると良い
-
-      console.log(event);
-      console.log("touchmove");
-      console.log(event.changedTouches[0].screenX);
-      console.log(event.changedTouches[0].screenY);
       draw(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
+      if(!isDrag && !isTouch) {
+        return;
+      }
+      if (character_count != 5 && data[character_count].length > 50){
+        nextButton.disabled = false;
+      }
+      now_coordinate[0] = event.changedTouches[0].clientX;
+      now_coordinate[1] = event.changedTouches[0].clientY;
+      data[character_count].push(now_coordinate.concat());
     });
   }
 
-  // イベント処理を初期化する
+  counter.innerHTML = `あと${times}文字`;
+
   initEventHandler();
 });
