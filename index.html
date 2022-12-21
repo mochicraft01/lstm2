@@ -15,18 +15,28 @@
             overscroll-behavior-y: none;
         }
     </style>
-    <canvas 
-    id="draw-area" 
-    width="400px" 
-    height="400px" 
-    style="border: 1px solid #000000;">
-    </canvas>
-    <div>
-        <button id="next-button">次の文字</button>
-        <button id="clear-button">書き直し</button>
+    <div id="name-form">
+        <label>
+            名前を入力してください<br>（半角英数字のみ, 3～10文字）<br>
+            <input type="text" id="name-text" size="40">
+        </label>
+        <button id="name-button">完了</button>
+        <br><br>
     </div>
-    <p id="character">「ず」を書いてください</p>
-    <p id="counter">あと10文字</p>
+    <div id="main">
+        <canvas 
+        id="draw-area" 
+        width="400px" 
+        height="400px" 
+        style="border: 1px solid #000000;">
+        </canvas>
+        <div>
+            <button id="next-button">次の文字</button>
+            <button id="clear-button">書き直し</button>
+        </div>
+        <p id="character">「ず」を書いてください</p>
+        <p id="counter">あと10文字</p>
+    </div>
 </body>
 
 </html>

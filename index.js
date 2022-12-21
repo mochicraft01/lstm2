@@ -5,6 +5,10 @@ window.addEventListener('load', () => {
   // contextを使ってcanvasに絵を書いていく
   const context = canvas.getContext('2d');
 
+  const nameForm = document.querySelector('#name-form');
+  const nameText = document.querySelector('#name-text');
+  const nameButton = document.querySelector('#name-button');
+  const main = document.querySelector('#main');
   const clearButton = document.querySelector('#clear-button');
   const nextButton = document.querySelector('#next-button');
   const counter = document.querySelector('#counter');
@@ -18,14 +22,18 @@ window.addEventListener('load', () => {
   data[2] = [];
   data[3] = [];
   data[4] = [];
+  let name;
   let now_coordinate = new Array(2);
   let count = 0;
   let character_count = 0;
   const times = 1;
+  let name_flag = false;
   let start_flag = false;
   let isDrag = false;
   let isTouch = false;
 
+  nameForm.style.display = "block";
+  main.style.display = "none"
   nextButton.disabled = true;
 
  
@@ -101,6 +109,15 @@ window.addEventListener('load', () => {
 
 
   function initEventHandler() {
+    nameButton.addEventListener('click', (event) => {
+      name = nameText.value
+      console.log(name);
+      if(name.match(/^[A-Za-z0-9]/) && name.length>=3 && name.length<=10){
+        nameForm.style.display = "none";
+        main.style.display = "block";
+      }
+    });
+
     clearButton.addEventListener('click', (event) => {
       clear();
       nextButton.disabled = true;
@@ -109,11 +126,18 @@ window.addEventListener('load', () => {
       }
       start_flag = false;
     });
+
     nextButton.addEventListener('click', (event) => {
       clear();
       nextButton.disabled = true;
       count = ++count;
       counter.innerHTML = `あと${times-count}文字`;
+
+      let img = document.createElement("img");
+      img.href = canvas.toDataURL("image/png",0.5);
+      img.download = "image.png";
+      img.click();
+
       if (count == times){
         count = 0;
         character_count = ++character_count;
@@ -150,11 +174,11 @@ window.addEventListener('load', () => {
       if(!isDrag && !isTouch) {
         return;
       }
-      if (character_count != 5 && data[character_count].length > 50){
+      if (character_count != 5 && data[character_count].length > 20){
         nextButton.disabled = false;
       }
-      now_coordinate[0] = event.layerX;
-      now_coordinate[1] = event.layerY;
+      now_coordinate[0] = Math.ceil(event.layerX);
+      now_coordinate[1] = Math.ceil(event.layerY);
       data[character_count].push(now_coordinate.concat());
     })
 
@@ -169,8 +193,8 @@ window.addEventListener('load', () => {
       if (character_count != 5 && data[character_count].length > 50){
         nextButton.disabled = false;
       }
-      now_coordinate[0] = event.changedTouches[0].clientX;
-      now_coordinate[1] = event.changedTouches[0].clientY;
+      now_coordinate[0] = Math.ceil(event.changedTouches[0].clientX);
+      now_coordinate[1] = Math.ceil(event.changedTouches[0].clientY);
       data[character_count].push(now_coordinate.concat());
     });
   }
