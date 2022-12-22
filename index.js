@@ -16,23 +16,27 @@ window.addEventListener('load', () => {
   // 直前のマウスのcanvas上のx座標とy座標を記録する
   let lastPosition = { x: null, y: null };
 
+  const count_goal = 2;
   let data = new Array(5);
-  data[0] = [];
-  data[1] = [];
-  data[2] = [];
-  data[3] = [];
-  data[4] = [];
+  data[0] = new Array(count_goal);
+  data[1] = new Array(count_goal);
+  data[2] = new Array(count_goal);
+  data[3] = new Array(count_goal);
+  data[4] = new Array(count_goal);
   let name;
   let now_coordinate = new Array(2);
+  let texts = '[[[';
+
+  let character_kind = 0;
   let count = 0;
-  let character_count = 0;
-  const times = 1;
+  let time = 0;
+
   let name_flag = false;
   let start_flag = false;
   let isDrag = false;
   let isTouch = false;
 
-  // let fs = require('fs');
+  let blob;
 
   nameForm.style.display = "block";
   main.style.display = "none"
@@ -109,6 +113,10 @@ window.addEventListener('load', () => {
     lastPosition.y = null;
   }
 
+  function textsGenerater(text){
+
+  }
+
 
   function initEventHandler() {
     nameButton.addEventListener('click', (event) => {
@@ -122,51 +130,62 @@ window.addEventListener('load', () => {
 
     clearButton.addEventListener('click', (event) => {
       clear();
+      time = 0;
       nextButton.disabled = true;
       if (start_flag == ture){
-        data[character_count].pop;
+        let list = data[character_kind];
+        list[count].pop;
       }
       start_flag = false;
     });
 
     nextButton.addEventListener('click', (event) => {
-      clear();
-      nextButton.disabled = true;
-      count = ++count;
-      counter.innerHTML = `あと${times-count}文字`;
-
+      /*
       let img = document.createElement("img");
       img.href = canvas.toDataURL("image/png",0.5);
       img.download = "image.png";
       img.click();
+      */
 
-      if (count == times){
+      clear();
+      time = 0;
+      nextButton.disabled = true;
+      count = ++count;
+      counter.innerHTML = `あと${count_goal-count}文字`;
+
+      if (count == count_goal){
         count = 0;
-        character_count = ++character_count;
-        if (character_count == 1){
+        character_kind = ++character_kind;
+
+        if (character_kind == 1){
           character.innerHTML = '「ん」を書いてください';
-          counter.innerHTML = `あと${times}文字`;
+          counter.innerHTML = `あと${count_goal}文字`;
+          texts = texts + "]][[";
         }
-        if (character_count == 2){
+        if (character_kind == 2){
           character.innerHTML = '「だ」を書いてください';
-          counter.innerHTML = `あと${times}文字`;
+          counter.innerHTML = `あと${count_goal}文字`;
+          texts = texts + "]][[";
         }
-        if (character_count == 3){
+        if (character_kind == 3){
           character.innerHTML = '「も」を書いてください';
-          counter.innerHTML = `あと${times}文字`;
+          counter.innerHTML = `あと${count_goal}文字`;
+          texts = texts + "]][[";
         }
-        if (character_count == 4){
+        if (character_kind == 4){
           character.innerHTML = '「ち」を書いてください';
-          counter.innerHTML = `あと${times}文字`;
+          counter.innerHTML = `あと${count_goal}文字`;
+          texts = texts + "]][[";
         }
-        if (character_count == 5){
+        if (character_kind == 5){
           character.innerHTML = 'ご協力ありがとうございました。';
           counter.innerHTML = '';
+          texts = texts + "]]]";
           console.log(data);
-          FileSystem.writeFile('/text.txt','aaaaaa',function(err,datum){
-            console.log("OMG");
-          });
+          console.log(texts);
         }
+      } else {
+        texts = texts + "][";
       }
       start_flag = true;
     })
@@ -179,12 +198,24 @@ window.addEventListener('load', () => {
       if(!isDrag && !isTouch) {
         return;
       }
-      if (character_count != 5 && data[character_count].length > 20){
+      let list = data[character_kind];
+      if (time == 0){
+        list[count] = [];
+      }
+      if (character_kind != 5 && time > 20){
         nextButton.disabled = false;
       }
       now_coordinate[0] = Math.ceil(event.layerX);
       now_coordinate[1] = Math.ceil(event.layerY);
-      data[character_count].push(now_coordinate.concat());
+      list[count].push(now_coordinate.concat());
+      console.log(data);
+
+      if (time != 0){
+        texts = texts + " ";
+      }
+      texts = texts + String(now_coordinate[0]) + " " + String(now_coordinate[1]);
+
+      time = ++time;
     })
 
     canvas.addEventListener('touchstart', dragStart);
@@ -195,16 +226,27 @@ window.addEventListener('load', () => {
       if(!isDrag && !isTouch) {
         return;
       }
-      if (character_count != 5 && data[character_count].length > 50){
+      let list = data[character_kind];
+      if (time == 0){
+        list[count] = [];
+      }
+      if (character_kind != 5 && time > 20){
         nextButton.disabled = false;
       }
       now_coordinate[0] = Math.ceil(event.changedTouches[0].clientX);
       now_coordinate[1] = Math.ceil(event.changedTouches[0].clientY);
-      data[character_count].push(now_coordinate.concat());
+      list[count].push(now_coordinate.concat());
+
+      if (time != 0){
+        texts = texts + " ";
+      }
+      texts = texts + String(now_coordinate[0]) + " " + String(now_coordinate[1]);
+
+      time = ++time;
     });
   }
 
-  counter.innerHTML = `あと${times}文字`;
+  counter.innerHTML = `あと${count_goal}文字`;
 
   initEventHandler();
 });
