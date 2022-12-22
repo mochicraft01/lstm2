@@ -32,6 +32,8 @@ window.addEventListener('load', () => {
   let isDrag = false;
   let isTouch = false;
 
+  // let fs = require('fs');
+
   nameForm.style.display = "block";
   main.style.display = "none"
   nextButton.disabled = true;
@@ -161,6 +163,9 @@ window.addEventListener('load', () => {
           character.innerHTML = 'ご協力ありがとうございました。';
           counter.innerHTML = '';
           console.log(data);
+          FileSystem.writeFile('/text.txt','aaaaaa',function(err,datum){
+            console.log("OMG");
+          });
         }
       }
       start_flag = true;
