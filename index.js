@@ -2,8 +2,9 @@
 // ※コールバック: 第2引数の無名関数(=関数名が省略された関数)
 window.addEventListener('load', () => {
   const canvas = document.querySelector('#draw-area');
-  // contextを使ってcanvasに絵を書いていく
   const context = canvas.getContext('2d');
+  context.fillStyle = "#FFFFFF";
+  context.fillRect(0,0,400,400);
 
   const nameForm = document.querySelector('#name-form');
   const nameText = document.querySelector('#name-text');
@@ -12,6 +13,8 @@ window.addEventListener('load', () => {
   const clearButton = document.querySelector('#clear-button');
   const nextButton = document.querySelector('#next-button');
   const counter = document.querySelector('#counter');
+  const img_DLlink = document.querySelector('#img-download-link');
+  const txt_DLlink = document.querySelector('#txt-download-link');
 
   // 直前のマウスのcanvas上のx座標とy座標を記録する
   let lastPosition = { x: null, y: null };
@@ -25,9 +28,14 @@ window.addEventListener('load', () => {
   data[4] = new Array(count_goal);
   let name;
   let now_coordinate = new Array(2);
-  let texts = '[[[';
+  let texts = '';
+  let DLtexts;
+  let DLchara;
+  let file_name = "null";
 
   let character_kind = 0;
+  let charalist = ["zu","n","da","mo","chi"];
+  let kanalist = ["ず","ん","だ","も","ち"]
   let count = 0;
   let time = 0;
 
@@ -40,6 +48,8 @@ window.addEventListener('load', () => {
 
   nameForm.style.display = "block";
   main.style.display = "none"
+  // nameForm.style.display = "none";
+  // main.style.display = "block"
   nextButton.disabled = true;
 
  
@@ -88,6 +98,8 @@ window.addEventListener('load', () => {
   // canvas上に書いた絵を全部消す
   function clear() {
     context.clearRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "#FFFFFF";
+    context.fillRect(0,0,400,400);
   }
 
   // マウスのドラッグを開始したらisDragのフラグをtrueにしてdraw関数内で
@@ -113,8 +125,18 @@ window.addEventListener('load', () => {
     lastPosition.y = null;
   }
 
-  function textsGenerater(text){
+  function imageDownload(){
+    file_name = name+"_"+charalist[character_kind]+"_"+String(count);
+    img_DLlink.href = canvas.toDataURL("image/png", 1);
+    img_DLlink.download = file_name;
+    img_DLlink.click();
+  }
 
+  function textDownload(){
+    blob = new Blob([DLtexts], {type:'text/plain'});
+    txt_DLlink.href = URL.createObjectURL(blob);
+    txt_DLlink.download = name+"_"+charalist[DLchara];
+    txt_DLlink.click();
   }
 
 
@@ -140,52 +162,37 @@ window.addEventListener('load', () => {
     });
 
     nextButton.addEventListener('click', (event) => {
-      /*
-      let img = document.createElement("img");
-      img.href = canvas.toDataURL("image/png",0.5);
-      img.download = "image.png";
-      img.click();
-      */
-
+      imageDownload();
       clear();
+
       time = 0;
       nextButton.disabled = true;
       count = ++count;
       counter.innerHTML = `あと${count_goal-count}文字`;
+      //console.log(count)
 
       if (count == count_goal){
+        DLtexts = texts;
+        texts = "";
+        DLchara = character_kind;
+
+        setTimeout(textDownload,2000);
+
         count = 0;
         character_kind = ++character_kind;
 
-        if (character_kind == 1){
-          character.innerHTML = '「ん」を書いてください';
-          counter.innerHTML = `あと${count_goal}文字`;
-          texts = texts + "]][[";
-        }
-        if (character_kind == 2){
-          character.innerHTML = '「だ」を書いてください';
-          counter.innerHTML = `あと${count_goal}文字`;
-          texts = texts + "]][[";
-        }
-        if (character_kind == 3){
-          character.innerHTML = '「も」を書いてください';
-          counter.innerHTML = `あと${count_goal}文字`;
-          texts = texts + "]][[";
-        }
-        if (character_kind == 4){
-          character.innerHTML = '「ち」を書いてください';
-          counter.innerHTML = `あと${count_goal}文字`;
-          texts = texts + "]][[";
-        }
+        character.innerHTML = "「"+kanalist[character_kind]+"」を書いてください";
+        counter.innerHTML = "あと"+String(count_goal)+"文字";
+
         if (character_kind == 5){
           character.innerHTML = 'ご協力ありがとうございました。';
           counter.innerHTML = '';
-          texts = texts + "]]]";
-          console.log(data);
-          console.log(texts);
+          //console.log(data);
+          //console.log(texts);
         }
       } else {
-        texts = texts + "][";
+        texts = texts + "&";
+        console.log(texts);
       }
       start_flag = true;
     })
@@ -208,7 +215,7 @@ window.addEventListener('load', () => {
       now_coordinate[0] = Math.ceil(event.layerX);
       now_coordinate[1] = Math.ceil(event.layerY);
       list[count].push(now_coordinate.concat());
-      console.log(data);
+      //console.log(data);
 
       if (time != 0){
         texts = texts + " ";
@@ -236,6 +243,7 @@ window.addEventListener('load', () => {
       now_coordinate[0] = Math.ceil(event.changedTouches[0].clientX);
       now_coordinate[1] = Math.ceil(event.changedTouches[0].clientY);
       list[count].push(now_coordinate.concat());
+      //console.log(data);
 
       if (time != 0){
         texts = texts + " ";
