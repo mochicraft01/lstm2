@@ -3,8 +3,7 @@
 window.addEventListener('load', () => {
   const canvas = document.querySelector('#draw-area');
   const context = canvas.getContext('2d');
-  context.fillStyle = "#FFFFFF";
-  context.fillRect(0,0,400,400);
+  
 
   const nameForm = document.querySelector('#name-form');
   const nameText = document.querySelector('#name-text');
@@ -46,11 +45,8 @@ window.addEventListener('load', () => {
 
   let blob;
 
-  nameForm.style.display = "block";
-  main.style.display = "none"
-  // nameForm.style.display = "none";
-  // main.style.display = "block"
-  nextButton.disabled = true;
+  //nameForm.style.setProperty("display", "block", "important");
+  //main.style.setProperty("display", "none", "important");
 
  
   function draw(x, y) {
@@ -145,9 +141,13 @@ window.addEventListener('load', () => {
       name = nameText.value
       console.log(name);
       if(name.match(/^[A-Za-z0-9]/) && name.length>=3 && name.length<=10){
-        nameForm.style.display = "none";
-        main.style.display = "block";
+        nameForm.style.setProperty("display", "none", "important");
+        main.style.setProperty("display", "block", "important");
+        context.fillStyle = "#FFFFFF";
+        context.fillRect(0,0,400,400);
+        nextButton.disabled = true;
       }
+      console.log("aaaaa");
     });
 
     clearButton.addEventListener('click', (event) => {
@@ -215,7 +215,7 @@ window.addEventListener('load', () => {
       now_coordinate[0] = Math.ceil(event.layerX);
       now_coordinate[1] = Math.ceil(event.layerY);
       list[count].push(now_coordinate.concat());
-      //console.log(data);
+      console.log(data);
 
       if (time != 0){
         texts = texts + " ";
@@ -243,7 +243,7 @@ window.addEventListener('load', () => {
       now_coordinate[0] = Math.ceil(event.changedTouches[0].clientX);
       now_coordinate[1] = Math.ceil(event.changedTouches[0].clientY);
       list[count].push(now_coordinate.concat());
-      //console.log(data);
+      console.log(data);
 
       if (time != 0){
         texts = texts + " ";
