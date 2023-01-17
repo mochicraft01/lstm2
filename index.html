@@ -21,12 +21,15 @@
         #main {
             display: none;
         }
+        #re-download {
+            display: none;
+        }
         #next-button {
-            width:300px;
+            width:230px;
             height:100px;
         }
         #clear-button {
-            width:100px;
+            width:70px;
             height:100px;
         }
     </style>
@@ -41,8 +44,8 @@
     <div id="main">
         <canvas 
         id="draw-area" 
-        width="400px" 
-        height="400px" 
+        width="300px" 
+        height="300px" 
         style="border: 1px solid #000000;">
         </canvas>
         <div>
@@ -53,6 +56,15 @@
         <p id="counter">あと10文字</p>
         <a id="img-download-link"></a>
         <a id="txt-download-link"></a>
+    </div>
+    <div id="re-download">
+        <p>↓順にクリックしてください↓</p>
+        <button id="re-zu">ず</button>
+        <button id="re-n">ん</button>
+        <button id="re-da">だ</button>
+        <button id="re-mo">も</button>
+        <button id="re-chi">ち</button>
+        <a id="re-download-link"></a>
     </div>
 </body>
 

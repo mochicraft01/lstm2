@@ -14,11 +14,17 @@ window.addEventListener('load', () => {
   const counter = document.querySelector('#counter');
   const img_DLlink = document.querySelector('#img-download-link');
   const txt_DLlink = document.querySelector('#txt-download-link');
+  const reDL = document.querySelector('#re-download');
+  const reZu = document.querySelector('#re-zu');
+  const reN = document.querySelector('#re-n');
+  const reDa = document.querySelector('#re-da');
+  const reMo = document.querySelector('#re-mo');
+  const reChi = document.querySelector('#re-chi');
 
   // 直前のマウスのcanvas上のx座標とy座標を記録する
   let lastPosition = { x: null, y: null };
 
-  const count_goal = 2;
+  const count_goal = 3;
   let data = new Array(5);
   data[0] = new Array(count_goal);
   data[1] = new Array(count_goal);
@@ -28,7 +34,7 @@ window.addEventListener('load', () => {
   let name;
   let now_coordinate = new Array(2);
   let texts = '';
-  let DLtexts;
+  let DLtexts = new Array(5);
   let DLchara;
   let file_name = "null";
 
@@ -44,10 +50,6 @@ window.addEventListener('load', () => {
   let isTouch = false;
 
   let blob;
-
-  //nameForm.style.setProperty("display", "block", "important");
-  //main.style.setProperty("display", "none", "important");
-
  
   function draw(x, y) {
     // マウスがドラッグされていなかったら処理を中断する。
@@ -95,7 +97,7 @@ window.addEventListener('load', () => {
   function clear() {
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.fillStyle = "#FFFFFF";
-    context.fillRect(0,0,400,400);
+    context.fillRect(0,0,300,300);
   }
 
   // マウスのドラッグを開始したらisDragのフラグをtrueにしてdraw関数内で
@@ -128,8 +130,8 @@ window.addEventListener('load', () => {
     img_DLlink.click();
   }
 
-  function textDownload(){
-    blob = new Blob([DLtexts], {type:'text/plain'});
+  function textDownload(DLchara){
+    blob = new Blob([DLtexts[DLchara]], {type:'text/plain'});
     txt_DLlink.href = URL.createObjectURL(blob);
     txt_DLlink.download = name+"_"+charalist[DLchara];
     txt_DLlink.click();
@@ -144,7 +146,7 @@ window.addEventListener('load', () => {
         nameForm.style.setProperty("display", "none", "important");
         main.style.setProperty("display", "block", "important");
         context.fillStyle = "#FFFFFF";
-        context.fillRect(0,0,400,400);
+        context.fillRect(0,0,300,300);
         nextButton.disabled = true;
       }
       console.log("aaaaa");
@@ -172,11 +174,11 @@ window.addEventListener('load', () => {
       //console.log(count)
 
       if (count == count_goal){
-        DLtexts = texts;
+        DLtexts[character_kind] = texts;
         texts = "";
-        DLchara = character_kind;
+        //DLchara = character_kind;
 
-        setTimeout(textDownload,2000);
+        //setTimeout(function(){textDownload(character_kind);},2000);
 
         count = 0;
         character_kind = ++character_kind;
@@ -189,6 +191,7 @@ window.addEventListener('load', () => {
           counter.innerHTML = '';
           //console.log(data);
           //console.log(texts);
+          reDL.style.setProperty("display", "block", "important");
         }
       } else {
         texts = texts + "&";
@@ -218,9 +221,9 @@ window.addEventListener('load', () => {
       console.log(data);
 
       if (time != 0){
-        texts = texts + " ";
+        texts = texts + "/";
       }
-      texts = texts + String(now_coordinate[0]) + " " + String(now_coordinate[1]);
+      texts = texts + String(now_coordinate[0]) + "," + String(now_coordinate[1]);
 
       time = ++time;
     })
@@ -246,11 +249,27 @@ window.addEventListener('load', () => {
       console.log(data);
 
       if (time != 0){
-        texts = texts + " ";
+        texts = texts + "/";
       }
-      texts = texts + String(now_coordinate[0]) + " " + String(now_coordinate[1]);
+      texts = texts + String(now_coordinate[0]) + "," + String(now_coordinate[1]);
 
       time = ++time;
+    });
+
+    reZu.addEventListener('click', (event) => {
+      textDownload(0);
+    });
+    reN.addEventListener('click', (event) => {
+      textDownload(1);
+    });
+    reDa.addEventListener('click', (event) => {
+      textDownload(2);
+    });
+    reMo.addEventListener('click', (event) => {
+      textDownload(3);
+    });
+    reChi.addEventListener('click', (event) => {
+      textDownload(4);
     });
   }
 
