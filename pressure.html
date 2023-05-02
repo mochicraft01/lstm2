@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Wacom Pressure Test</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="300" height="300"></canvas>
+​
+    <script>
+        // CSVファイルに書き込むためのヘッダー
+        const CSV_HEADER = 'Pressure\n';
+​
+        // CSVファイルに書き込むためのデータを格納する文字列
+        let csv_data = '';
+​
+        // キャンバスのコンテキストを取得する
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+​
+        // Wacomのペンタブレットから筆圧を取得するための定数
+        const PEN_PRESSURE = 0x30;
+​
+        // ペンタブレットから筆圧を取得する関数
+        function get_pressure(event) {
+            let pressure = 0;
+            if (event.pointerType === 'pen') {
+                const data = event.getCoalescedEvents();
+                for (let i = 0; i < data.length; i++) {
+                    const event_data = data[i];
+                    if (event_data.pointerType === 'pen' && event_data.pressure) {
+                        pressure = event_data.pressure;
+                        break;
+                    }
+                }
+            }
+            return pressure;
+        }
+​
+        // CSVファイルにデータを書き込む関数
+        function write_csv(data) {
+            csv_data += data + '\n';
+        }
+​
+        // キャンバスに線を描画する関数
+        function draw_line(event) {
+            context.lineWidth = 10;
+            context.lineCap = 'round';
+            context.strokeStyle = 'black';
+            context.beginPath();
+            context.moveTo(event.offsetX, event.offsetY);
+            context.lineTo(event.offsetX + 1, event.offsetY + 1);
+            context.stroke();
+​
+            const pressure = get_pressure(event);
+            write_csv(pressure);
+        }
+​
+        // キャンバスのマウスイベントに線を描画する関数をバインドする
+        canvas.addEventListener('mousedown', (event) => {
+            canvas.addEventListener('mousemove', draw_line);
+        });
+​
+        canvas.addEventListener('mouseup', (event) => {
+            canvas.removeEventListener('mousemove', draw_line);
+        });
+​
+        // CSVファイルに書き込む
+        function save_csv() {
+            const a = document.createElement('a');
+            const blob = new Blob([CSV_HEADER + csv_data], {type: 'text/csv'});
+            a.href = URL.createObjectURL(blob);
+            a.download = 'pressure.csv';
+            a.click();
+        }
+​
+        // CSVファイルをダウンロードするためのボタンを追加する
+        const save_button = document.createElement('button');
+        save_button.innerHTML = 'Save CSV';
+        save_button.addEventListener('click', save_csv);
+        document.body.appendChild(save_button);
+    </script>

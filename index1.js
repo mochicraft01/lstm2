@@ -1,9 +1,11 @@
 // ページの読み込みが完了したらコールバック関数が呼ばれる
 // ※コールバック: 第2引数の無名関数(=関数名が省略された関数)
 window.addEventListener('load', () => {
+  const PEN_PRESSURE = 0x30;
+
   const canvas = document.querySelector('#draw-area');
   const context = canvas.getContext('2d');
-  
+
 
   const nameForm = document.querySelector('#name-form');
   const nameText = document.querySelector('#name-text');
@@ -39,8 +41,8 @@ window.addEventListener('load', () => {
   let file_name = "null";
 
   let character_kind = 0;
-  let charalist = ["zu","n","da","mo","chi"];
-  let kanalist = ["ず","ん","だ","も","ち"]
+  let charalist = ["zu", "n", "da", "mo", "chi"];
+  let kanalist = ["ず", "ん", "だ", "も", "ち"]
   let count = 0;
   let time = 0;
 
@@ -50,11 +52,26 @@ window.addEventListener('load', () => {
   let isTouch = false;
 
   let blob;
- 
-  function draw(x, y) {
+
+  function get_pressure(event) {
+    let pressure = 0;
+    if (event.pointerType === 'pen') {
+      const data = event.getCoalescedEvents();
+      for (let i = 0; i < data.length; i++) {
+        const event_data = data[i];
+        if (event_data.pointerType === 'pen' && event_data.pressure) {
+          pressure = event_data.pressure;
+          break;
+        }
+      }
+    }
+    return pressure;
+  }
+
+  function draw(x, y, event) {
     // マウスがドラッグされていなかったら処理を中断する。
     // ドラッグしながらしか絵を書くことが出来ない。
-    if(!isDrag && !isTouch) {
+    if (!isDrag && !isTouch) {
       return;
     }
 
@@ -91,13 +108,16 @@ window.addEventListener('load', () => {
     // 現在のマウス位置を記録して、次回線を書くときの開始点に使う
     lastPosition.x = x;
     lastPosition.y = y;
+
+    const pressure = get_pressure(event);
+    console.log(pressure);
   }
 
   // canvas上に書いた絵を全部消す
   function clear() {
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.fillStyle = "#FFFFFF";
-    context.fillRect(0,0,300,300);
+    context.fillRect(0, 0, 300, 300);
   }
 
   // マウスのドラッグを開始したらisDragのフラグをtrueにしてdraw関数内で
@@ -118,22 +138,22 @@ window.addEventListener('load', () => {
     isDrag = false;
     isTouch = false;
 
-    
+
     lastPosition.x = null;
     lastPosition.y = null;
   }
 
-  function imageDownload(){
-    file_name = name+"_"+charalist[character_kind]+"_"+String(count);
+  function imageDownload() {
+    file_name = name + "_" + charalist[character_kind] + "_" + String(count);
     img_DLlink.href = canvas.toDataURL("image/png", 1);
     img_DLlink.download = file_name;
     img_DLlink.click();
   }
 
-  function textDownload(DLchara){
-    blob = new Blob([DLtexts[DLchara]], {type:'text/plain'});
+  function textDownload(DLchara) {
+    blob = new Blob([DLtexts[DLchara]], { type: 'text/plain' });
     txt_DLlink.href = URL.createObjectURL(blob);
-    txt_DLlink.download = name+"_"+charalist[DLchara];
+    txt_DLlink.download = name + "_" + charalist[DLchara];
     txt_DLlink.click();
   }
 
@@ -142,11 +162,11 @@ window.addEventListener('load', () => {
     nameButton.addEventListener('click', (event) => {
       name = nameText.value
       console.log(name);
-      if(name.match(/^[A-Za-z0-9]/) && name.length>=3 && name.length<=10){
+      if (name.match(/^[A-Za-z0-9]/) && name.length >= 3 && name.length <= 10) {
         nameForm.style.setProperty("display", "none", "important");
         main.style.setProperty("display", "block", "important");
         context.fillStyle = "#FFFFFF";
-        context.fillRect(0,0,300,300);
+        context.fillRect(0, 0, 300, 300);
         nextButton.disabled = true;
       }
       console.log("aaaaa");
@@ -156,7 +176,7 @@ window.addEventListener('load', () => {
       clear();
       time = 0;
       nextButton.disabled = true;
-      if (start_flag == ture){
+      if (start_flag == ture) {
         let list = data[character_kind];
         list[count].pop;
       }
@@ -170,10 +190,10 @@ window.addEventListener('load', () => {
       time = 0;
       nextButton.disabled = true;
       count = ++count;
-      counter.innerHTML = `あと${count_goal-count}文字`;
+      counter.innerHTML = `あと${count_goal - count}文字`;
       //console.log(count)
 
-      if (count == count_goal){
+      if (count == count_goal) {
         DLtexts[character_kind] = texts;
         texts = "";
         //DLchara = character_kind;
@@ -183,10 +203,10 @@ window.addEventListener('load', () => {
         count = 0;
         character_kind = ++character_kind;
 
-        character.innerHTML = "「"+kanalist[character_kind]+"」を書いてください";
-        counter.innerHTML = "あと"+String(count_goal)+"文字";
+        character.innerHTML = "「" + kanalist[character_kind] + "」を書いてください";
+        counter.innerHTML = "あと" + String(count_goal) + "文字";
 
-        if (character_kind == 5){
+        if (character_kind == 5) {
           character.innerHTML = 'ご協力ありがとうございました。';
           counter.innerHTML = '';
           //console.log(data);
@@ -205,14 +225,14 @@ window.addEventListener('load', () => {
     canvas.addEventListener('mouseout', dragEnd);
     canvas.addEventListener('mousemove', (event) => {
       draw(event.layerX, event.layerY);
-      if(!isDrag && !isTouch) {
+      if (!isDrag && !isTouch) {
         return;
       }
       let list = data[character_kind];
-      if (time == 0){
+      if (time == 0) {
         list[count] = [];
       }
-      if (character_kind != 5 && time > 20){
+      if (character_kind != 5 && time > 20) {
         nextButton.disabled = false;
       }
       now_coordinate[0] = Math.ceil(event.layerX);
@@ -220,7 +240,7 @@ window.addEventListener('load', () => {
       list[count].push(now_coordinate.concat());
       console.log(data);
 
-      if (time != 0){
+      if (time != 0) {
         texts = texts + "/";
       }
       texts = texts + String(now_coordinate[0]) + "," + String(now_coordinate[1]);
@@ -233,14 +253,14 @@ window.addEventListener('load', () => {
     canvas.addEventListener('touchcancel', dragEnd);
     canvas.addEventListener('touchmove', (event) => {
       draw(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
-      if(!isDrag && !isTouch) {
+      if (!isDrag && !isTouch) {
         return;
       }
       let list = data[character_kind];
-      if (time == 0){
+      if (time == 0) {
         list[count] = [];
       }
-      if (character_kind != 5 && time > 20){
+      if (character_kind != 5 && time > 20) {
         nextButton.disabled = false;
       }
       now_coordinate[0] = Math.ceil(event.changedTouches[0].clientX);
@@ -248,7 +268,7 @@ window.addEventListener('load', () => {
       list[count].push(now_coordinate.concat());
       console.log(data);
 
-      if (time != 0){
+      if (time != 0) {
         texts = texts + "/";
       }
       texts = texts + String(now_coordinate[0]) + "," + String(now_coordinate[1]);

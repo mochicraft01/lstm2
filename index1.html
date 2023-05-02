@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>筆跡判別AI　LSTM　データ収集ツール</title>
+    <script src="index1.js"></script>
+</head>
+
+<body>
+    <style>
+        body {
+            overscroll-behavior-y: none;
+            overflow: hidden;
+        }
+        #name-form {
+            display: block;
+        }
+        #main {
+            display: none;
+        }
+        #re-download {
+            display: none;
+        }
+        #next-button {
+            width:230px;
+            height:100px;
+        }
+        #clear-button {
+            width:70px;
+            height:100px;
+        }
+    </style>
+    <div id="name-form">
+        <label>
+            名前を入力してください<br>（半角英数字のみ, 3～10文字）<br>
+            <input type="text" id="name-text" size="40">
+        </label>
+        <button id="name-button">完了</button>
+        <br><br>
+    </div>
+    <div id="main">
+        <canvas 
+        id="draw-area" 
+        width="300px" 
+        height="300px" 
+        style="border: 1px solid #000000;">
+        </canvas>
+        <div>
+            <button id="next-button">次の文字</button>
+            <button id="clear-button">書き直し</button>
+        </div>
+        <p id="character">「ず」を書いてください</p>
+        <p id="counter">あと10文字</p>
+        <a id="img-download-link"></a>
+        <a id="txt-download-link"></a>
+    </div>
+    <div id="re-download">
+        <p>↓順にクリックしてください↓</p>
+        <button id="re-zu">ず</button>
+        <button id="re-n">ん</button>
+        <button id="re-da">だ</button>
+        <button id="re-mo">も</button>
+        <button id="re-chi">ち</button>
+        <a id="re-download-link"></a>
+    </div>
+</body>
+
+</html>
